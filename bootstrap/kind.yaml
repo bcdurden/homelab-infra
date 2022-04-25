@@ -1,0 +1,14 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    # This option mounts the host docker registry folder into
+    # the control-plane node, allowing containerd to access them. 
+    extraMounts:
+      - containerPath: /etc/docker/certs.d/registry.dev.example.com
+        hostPath: /etc/docker/certs.d/registry.dev.example.com
+containerdConfigPatches:
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.lab.pivotal-poc.solutions".tls]
+      insecure_skip_verify = true
+
