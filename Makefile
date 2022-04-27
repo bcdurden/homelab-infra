@@ -1,4 +1,4 @@
-REQUIRED_BINARIES := tanzu ytt kubectl kind
+REQUIRED_BINARIES := tanzu ytt kubectl kind imgpkg kapp
 WORKING_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 ROOT_DIR := $(shell git rev-parse --show-toplevel)
 BOOTSTRAP_DIR := ${ROOT_DIR}/bootstrap
