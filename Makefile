@@ -29,7 +29,7 @@ contour: check-tools
 	@printf "\n===> Installing Contour Package into the Cluster\n";\
 	tanzu package install contour -p contour.tanzu.vmware.com -v 1.17.2+vmware.1-tkg.2 -f $(SERVICES_DIR)/contour/values.yaml
 
-harbor: storage_class contour
+harbor: metallb storage_class contour
 	@printf "\n===> Installing Harbor Package into the Cluster\n";\
 	tanzu package install harbor -p harbor.tanzu.vmware.com -v 2.2.3+vmware.1-tkg.2 -f $(SERVICES_DIR)/harbor/harbor-data-values.yaml
 
