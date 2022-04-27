@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  # Name must be `kapp-controller-config` for kapp controller to pick it up
+  name: kapp-controller-config
+
+  # Namespace must match the namespace kapp-controller is deployed to
+  namespace: tkg-system
+
+stringData:
+  # A cert chain of trusted ca certs. These will be added to the system-wide
+  # cert pool of trusted ca's (optional)
+  caCerts: |
+    -----BEGIN CERTIFICATE-----
+    MIIDWzCCAkOgAwIBAgIRANzHa2FjGLxxNQj3G6zDMTIwDQYJKoZIhvcNAQELBQAw
+    LTEXMBUGA1UEChMOUHJvamVjdCBIYXJib3IxEjAQBgNVBAMTCUhhcmJvciBDQTAe
+    Fw0yMjA0MjcxNDE0MTVaFw0zMjA0MjQxNDE0MTVaMC0xFzAVBgNVBAoTDlByb2pl
+    Y3QgSGFyYm9yMRIwEAYDVQQDEwlIYXJib3IgQ0EwggEiMA0GCSqGSIb3DQEBAQUA
+    A4IBDwAwggEKAoIBAQDt4B3jdv1EfrhciRUNoUSdDmSXpgKkMFOUHKIuPIHkqz03
+    MPSjtcYcgQmOATpG/R0tJniv5I+u9Ymt5yxSWF4ZGrWNAqd2mAN0sjHYfzDpFhy3
+    Rt3Z3DcLQA6ha9wMo3xX/2q46VfxlDPnW7PZEVqZJUDLAfmBstbblNGz0yCx+rxm
+    PYOf86B/9RGlUB02ytkdUxF66kesurOaTfiKz4K7/vkW6ZR3Fzja5SeNmD2odFiL
+    orguq//H+NWPAqDouwKrjP1Q0bbj9PHNtKNllqdxe68QYw3STnmp68lTGRfiOC0Z
+    i/I2HRKAsQC9ALuJzsmD5b6RFUVKlEwUmuZB9JkzAgMBAAGjdjB0MA4GA1UdDwEB
+    /wQEAwICBDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDwYDVR0TAQH/
+    BAUwAwEB/zAdBgNVHQ4EFgQU02BnHTUmkXTikg3pdBSmf34AzwUwEwYDVR0RBAww
+    CoIIaGFyYm9yY2EwDQYJKoZIhvcNAQELBQADggEBALAQZfUNm+61eE4UWZaWpk26
+    J04Hf2ctVR2hKqfEmU0yRpjpZyJ2sNIXDqQYokCAp9mcYBhzhD2cb2V3a9t4X6X2
+    XLtnwjBQMx6J++iXropncwauiOs4e0rOyisI3pRs4rcCJZ9sFzhPEllaRpa8/2XE
+    NTVdxkRdVohJGtr4D6pE5VLM0X6mayTrQz0UI7pQ7g0L/hzc0+eWeN1iQkRYptmN
+    95wlIp4UPtVNUX2SMlrNIt3dXkQNSw9vqAT+DVzSVQzFLn5Hz76Jidx9mdEmFrtL
+    EOIivh46F0EnZ7qD11k2ROuKRylWZW23obDDMFMr759Glc/x9Lz9JkgZX2KOaFs=
+    -----END CERTIFICATE-----

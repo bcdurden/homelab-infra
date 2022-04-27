@@ -1,0 +1,22 @@
+#@data/values
+---
+cluster_name: mgmt-workloads
+cluster_plan: dev
+control_plane_disk_gb: "20"
+control_plane_static_endpoint_ip: 10.2.0.30
+control_plane_memory_size_mb: "4096"
+control_plane_cpu_count: "2"
+worker_plane_disk_gb: "20"
+worker_plane_memory_size_mb: "4096"
+worker_plane_cpu_count: "2"
+
+vsphere_datacenter: /Lab
+vsphere_datastore: /Lab/datastore/datastore1
+vsphere_vm_folder: /Lab/vm/TKG-Workloads
+vsphere_network: /Lab/network/Lab-Workloads
+vsphere_password: REMOVED
+vsphere_resource_pool: "/Lab/host/esxi-main.pivotal-poc.solutions/Resources"
+vcenter_url: vcsa.pivotal-poc.solutions
+ssh_public_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC8cqbVymOJrWm2UOimzSQEc/KV4bkJnTPzrip7SlNl0cext92RtqvWco85vAPiX20KQW3T9yE4rzznoABm48x5brJ3hBs59+h+3OzWAYuGe/eySRdBiE6/JCiODLJwJMlP00YSdsHP70k1SDrhOFlTeWSJwBMxyuH6kJ2dTc34m71Dd/wCjy31OBksiOmqSHXy8zBBkuvuCp1IHKisMgw51toP9C67I/dMpFX3bU2qUOSIiPxExZUywZxMmC6i9vgPzjkYE25vDCuD3sCC3+XoxeWdP4HWvxF22tIV64EoLEPYtDtMmuA5wFAMAmSfiSWZzQXbhVIRK547UqNsPupAZ3oSCbgiWIx634wUto+evJ4Bcz9jUu2bAOgBWYenIPMgcg3IcVcy9siLhkHa+OCLMqLn0TbulFVpGxEKI5ZPVqGtFiqbgk7q43GCMwe7RPYZfWuL1meAWWjf7lBIwfLxGfazmifh40qjhMBPWYLOMXdwRZAqo7RXsFOuhG3TEx4g0PlkzuwE9/zzoKv5LsTdnHdrgNP8Nli0iCbVFIqIz3Qw/qo+G86nlJyUK7duM+UIOln5FvNhJmg1fI0xHnDSoQ3nGcfUyfZEVhwKK793ONy19/Sc4h718uVG5Zk0HBoxH5pIv97KdJbKPtATOhORmk0cdqzoEUzfAjN57suE0w== '
+vcenter_tls_thumbprint: 33:A9:A8:56:7A:54:7A:6B:45:01:7C:35:B4:64:A0:87:EE:FB:BF:98
+vcenter_username: administrator@vsphere.homelab.local

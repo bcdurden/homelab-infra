@@ -1,7 +1,8 @@
 REQUIRED_BINARIES := tanzu ytt kubectl kind imgpkg kapp
 WORKING_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 ROOT_DIR := $(shell git rev-parse --show-toplevel)
-BOOTSTRAP_DIR := ${ROOT_DIR}/bootstrap
+BOOTSTRAP_DIR := ${ROOT_DIR}/seed
+WORKLOAD_DIR := ${ROOT_DIR}/workloads
 SERVICES_DIR := ${ROOT_DIR}/services
 PASSWORD="overrideme"
 HARBOR_VERSION="2.2.3+vmware.1-tkg.2"
@@ -34,8 +35,6 @@ contour: check-tools
 harbor: metallb storage_class contour
 	@printf "\n===> Installing Harbor Package into the Cluster\n";\
 	imgpkg pull -b ${HARBOR_IMAGE_URL} -o /tmp/harbor
-	@printf "\n===> Cycling Passwords for Harbor";
-	/tmp/harbor/config/scripts/generate-passwords.sh ${SERVICES_DIR}/harbor/harbor-data-values.yaml
 	tanzu package install harbor -p harbor.tanzu.vmware.com -v 2.2.3+vmware.1-tkg.2 -f ${SERVICES_DIR}/harbor/harbor-data-values.yaml
 	@printf "\n===>Placing Harbor CA Certificate at /tmp/harbor.ca.crt";
 	kubectl get secret harbor-ca-key-pair -n tanzu-system-registry -o yaml | yq e '.data."ca.crt"' - | base64 -d > /tmp/harbor.ca.crt
@@ -50,3 +49,7 @@ install: kind deploy metallb harbor
 delete-kind: check-tools
 	@printf "\n===> Removing KinD cluster\n";\
 	kind delete cluster
+
+deploy-workload-management: check-tools
+	@printf "\n===> Installing Infra Management-Cluster\n";\
+	ytt -v vsphere_password=${PASSWORD} -f $(WORKLOAD_DIR)/cluster_config > /tmp/config.yaml && tanzu management-cluster create --file /tmp/config.yaml -v 6 --use-existing-bootstrap-cluster
