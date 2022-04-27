@@ -4,6 +4,8 @@ ROOT_DIR := $(shell git rev-parse --show-toplevel)
 BOOTSTRAP_DIR := ${ROOT_DIR}/bootstrap
 SERVICES_DIR := ${ROOT_DIR}/services
 PASSWORD="overrideme"
+HARBOR_VERSION="2.2.3+vmware.1-tkg.2"
+HARBOR_IMAGE_URL := $(shell kubectl -n tanzu-package-repo-global get packages harbor.tanzu.vmware.com.${HARBOR_VERSION} -o jsonpath='{.spec.template.spec.fetch[0].imgpkgBundle.image}')
 
 check-tools: ## Check to make sure you have the right tools
 	$(foreach exec,$(REQUIRED_BINARIES),\
@@ -23,7 +25,7 @@ storage_class: check-tools
 
 metallb: check-tools
 	@printf "\n===> Installing MetalLB into the Cluster\n";\
-	kubectl apply -f $(SERVICES_DIR)/metallb
+	kapp deploy -a metallb -f $(SERVICES_DIR)/metallb -y
 
 contour: check-tools
 	@printf "\n===> Installing Contour Package into the Cluster\n";\
@@ -31,7 +33,10 @@ contour: check-tools
 
 harbor: metallb storage_class contour
 	@printf "\n===> Installing Harbor Package into the Cluster\n";\
-	tanzu package install harbor -p harbor.tanzu.vmware.com -v 2.2.3+vmware.1-tkg.2 -f $(SERVICES_DIR)/harbor/harbor-data-values.yaml
+	imgpkg pull -b ${HARBOR_IMAGE_URL} -o /tmp/harbor
+	@printf "\n===> Cycling Passwords for Harbor";
+	/tmp/harbor/config/scripts/generate-passwords.sh ${SERVICES_DIR}/harbor/harbor-data-values.yaml
+	tanzu package install harbor -p harbor.tanzu.vmware.com -v 2.2.3+vmware.1-tkg.2 -f ${SERVICES_DIR}/harbor/harbor-data-values.yaml
 
 install: kind deploy metallb harbor
 	@printf "\n===> Installing Infra Management-Cluster\n";\
