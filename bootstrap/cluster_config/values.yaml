@@ -1,5 +1,7 @@
 #@data/values
-
+---
+cluster_name: mgmt-seed
+cluster_plan: dev
 control_plane_disk_gb: "20"
 control_plane_static_endpoint_ip: 10.1.0.130
 control_plane_memory_size_mb: "4096"

@@ -1,3 +1,31 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:template", "template")
+#@ load("@ytt:base64", "base64")
+
+#! Controls
+VSPHERE_CONTROL_PLANE_DISK_GIB: #@ data.values.control_plane_disk_gb 
+VSPHERE_CONTROL_PLANE_ENDPOINT: #@ data.values.control_plane_static_endpoint_ip
+VSPHERE_CONTROL_PLANE_MEM_MIB: #@ data.values.control_plane_memory_size_mb
+VSPHERE_CONTROL_PLANE_NUM_CPUS: #@ data.values.control_plane_cpu_count
+VSPHERE_DATACENTER: #@ data.values.vsphere_datacenter
+VSPHERE_DATASTORE: #@ data.values.vsphere_datastore
+VSPHERE_FOLDER: #@ data.values.vsphere_vm_folder
+VSPHERE_NETWORK: #@ data.values.vsphere_network
+VSPHERE_PASSWORD: #@ "<encoded:" + base64.encode(data.values.vsphere_password) + ">"
+VSPHERE_RESOURCE_POOL: #@ data.values.vsphere_resource_pool
+VSPHERE_SERVER: #@ data.values.vcenter_url
+VSPHERE_SSH_AUTHORIZED_KEY: #@ data.values.ssh_public_key
+VSPHERE_TLS_THUMBPRINT: #@ data.values.vcenter_tls_thumbprint
+VSPHERE_USERNAME: #@ data.values.vcenter_username
+VSPHERE_WORKER_DISK_GIB: #@ data.values.control_plane_disk_gb 
+VSPHERE_WORKER_MEM_MIB: #@ data.values.control_plane_memory_size_mb
+VSPHERE_WORKER_NUM_CPUS: #@ data.values.control_plane_cpu_count
+
+CLUSTER_NAME: #@ data.values.cluster_name
+CLUSTER_PLAN:  #@ data.values.cluster_plan
+
+#! Defaults
 AVI_CA_DATA_B64: ""
 AVI_CLOUD_NAME: ""
 AVI_CONTROL_PLANE_HA_PROVIDER: ""
@@ -12,7 +40,6 @@ AVI_PASSWORD: ""
 AVI_SERVICE_ENGINE_GROUP: ""
 AVI_USERNAME: ""
 CLUSTER_CIDR: 100.96.0.0/11
-CLUSTER_PLAN: dev
 ENABLE_AUDIT_LOGGING: "false"
 ENABLE_CEIP_PARTICIPATION: "false"
 ENABLE_MHC: "true"
@@ -43,20 +70,3 @@ OS_NAME: ubuntu
 OS_VERSION: "20.04"
 SERVICE_CIDR: 100.64.0.0/13
 TKG_HTTP_PROXY_ENABLED: "false"
-VSPHERE_CONTROL_PLANE_DISK_GIB: "20"
-VSPHERE_CONTROL_PLANE_ENDPOINT: 10.1.0.130
-VSPHERE_CONTROL_PLANE_MEM_MIB: "4096"
-VSPHERE_CONTROL_PLANE_NUM_CPUS: "2"
-VSPHERE_DATACENTER: /Lab
-VSPHERE_DATASTORE: /Lab/datastore/datastore1
-VSPHERE_FOLDER: /Lab/vm/TKG-Infra
-VSPHERE_NETWORK: /Lab/network/Lab-Infra
-VSPHERE_PASSWORD: <encoded:Lk5ld01hY2hpbmUxLg==>
-VSPHERE_RESOURCE_POOL: "/Lab/host/esxi-main.pivotal-poc.solutions/Resources"
-VSPHERE_SERVER: vcsa.pivotal-poc.solutions
-VSPHERE_SSH_AUTHORIZED_KEY: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC8cqbVymOJrWm2UOimzSQEc/KV4bkJnTPzrip7SlNl0cext92RtqvWco85vAPiX20KQW3T9yE4rzznoABm48x5brJ3hBs59+h+3OzWAYuGe/eySRdBiE6/JCiODLJwJMlP00YSdsHP70k1SDrhOFlTeWSJwBMxyuH6kJ2dTc34m71Dd/wCjy31OBksiOmqSHXy8zBBkuvuCp1IHKisMgw51toP9C67I/dMpFX3bU2qUOSIiPxExZUywZxMmC6i9vgPzjkYE25vDCuD3sCC3+XoxeWdP4HWvxF22tIV64EoLEPYtDtMmuA5wFAMAmSfiSWZzQXbhVIRK547UqNsPupAZ3oSCbgiWIx634wUto+evJ4Bcz9jUu2bAOgBWYenIPMgcg3IcVcy9siLhkHa+OCLMqLn0TbulFVpGxEKI5ZPVqGtFiqbgk7q43GCMwe7RPYZfWuL1meAWWjf7lBIwfLxGfazmifh40qjhMBPWYLOMXdwRZAqo7RXsFOuhG3TEx4g0PlkzuwE9/zzoKv5LsTdnHdrgNP8Nli0iCbVFIqIz3Qw/qo+G86nlJyUK7duM+UIOln5FvNhJmg1fI0xHnDSoQ3nGcfUyfZEVhwKK793ONy19/Sc4h718uVG5Zk0HBoxH5pIv97KdJbKPtATOhORmk0cdqzoEUzfAjN57suE0w== '
-VSPHERE_TLS_THUMBPRINT: 33:A9:A8:56:7A:54:7A:6B:45:01:7C:35:B4:64:A0:87:EE:FB:BF:98
-VSPHERE_USERNAME: administrator@vsphere.homelab.local
-VSPHERE_WORKER_DISK_GIB: "20"
-VSPHERE_WORKER_MEM_MIB: "4096"
-VSPHERE_WORKER_NUM_CPUS: "2"
