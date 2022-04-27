@@ -37,6 +37,12 @@ harbor: metallb storage_class contour
 	@printf "\n===> Cycling Passwords for Harbor";
 	/tmp/harbor/config/scripts/generate-passwords.sh ${SERVICES_DIR}/harbor/harbor-data-values.yaml
 	tanzu package install harbor -p harbor.tanzu.vmware.com -v 2.2.3+vmware.1-tkg.2 -f ${SERVICES_DIR}/harbor/harbor-data-values.yaml
+	@printf "\n===>Placing Harbor CA Certificate at /tmp/harbor.ca.crt";
+	kubectl get secret harbor-ca-key-pair -n tanzu-system-registry -o yaml | yq e '.data."ca.crt"' - | base64 -d > /tmp/harbor.ca.crt
+
+harbor_ca:
+	@printf "\n===>Placing Harbor CA Certificate at /tmp/harbor.ca.crt\n";\
+	kubectl get secret harbor-ca-key-pair -n tanzu-system-registry -o yaml | yq e '.data."ca.crt"' - | base64 -d > /tmp/harbor.ca.crt
 
 install: kind deploy metallb harbor
 	@printf "\n===> Installing Infra Management-Cluster\n";\
