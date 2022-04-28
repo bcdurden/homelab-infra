@@ -52,5 +52,5 @@ delete-kind: check-tools
 	kind delete cluster
 
 deploy-workload-management: check-tools
-	@printf "\n===> Installing Infra Management-Cluster\n";\
+	@printf "\n===> Installing Workload Management-Cluster\n";\
 	ytt -v vsphere_password=${PASSWORD} -f $(WORKLOAD_DIR)/cluster_config > /tmp/config.yaml && tanzu management-cluster create --file /tmp/config.yaml -v 6 --use-existing-bootstrap-cluster -t ${DEFAULT_TIMEOUT}
