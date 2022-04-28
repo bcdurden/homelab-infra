@@ -7,6 +7,7 @@ SERVICES_DIR := ${ROOT_DIR}/services
 PASSWORD="overrideme"
 HARBOR_VERSION="2.2.3+vmware.1-tkg.2"
 HARBOR_IMAGE_URL := $(shell kubectl -n tanzu-package-repo-global get packages harbor.tanzu.vmware.com.${HARBOR_VERSION} -o jsonpath='{.spec.template.spec.fetch[0].imgpkgBundle.image}')
+DEFAULT_TIMEOUT="1h"
 
 check-tools: ## Check to make sure you have the right tools
 	$(foreach exec,$(REQUIRED_BINARIES),\
@@ -18,7 +19,7 @@ kind: check-tools
 
 deploy:
 	@printf "\n===> Installing Infra Management-Cluster\n";\
-	ytt -v vsphere_password=${PASSWORD} -f $(BOOTSTRAP_DIR)/cluster_config > /tmp/config.yaml && tanzu management-cluster create --file /tmp/config.yaml -v 6 --use-existing-bootstrap-cluster
+	ytt -v vsphere_password=${PASSWORD} -f $(BOOTSTRAP_DIR)/cluster_config > /tmp/config.yaml && tanzu management-cluster create --file /tmp/config.yaml -v 6 --use-existing-bootstrap-cluster -t ${DEFAULT_TIMEOUT}
 
 storage_class: check-tools
 	@printf "\n===> Installing the default Storage Class into the Cluster\n";\
@@ -52,4 +53,4 @@ delete-kind: check-tools
 
 deploy-workload-management: check-tools
 	@printf "\n===> Installing Infra Management-Cluster\n";\
-	ytt -v vsphere_password=${PASSWORD} -f $(WORKLOAD_DIR)/cluster_config > /tmp/config.yaml && tanzu management-cluster create --file /tmp/config.yaml -v 6 --use-existing-bootstrap-cluster
+	ytt -v vsphere_password=${PASSWORD} -f $(WORKLOAD_DIR)/cluster_config > /tmp/config.yaml && tanzu management-cluster create --file /tmp/config.yaml -v 6 --use-existing-bootstrap-cluster -t ${DEFAULT_TIMEOUT}
