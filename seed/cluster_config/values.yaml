@@ -1,9 +1,9 @@
 #@data/values
 ---
-cluster_name: mgmt-seed
+cluster_name: mgmt-workloads
 cluster_plan: dev
 control_plane_disk_gb: "20"
-control_plane_static_endpoint_ip: 10.1.0.130
+control_plane_static_endpoint_ip: 10.2.0.30
 control_plane_memory_size_mb: "4096"
 control_plane_cpu_count: "2"
 worker_plane_disk_gb: "20"
@@ -12,8 +12,8 @@ worker_plane_cpu_count: "2"
 
 vsphere_datacenter: /Lab
 vsphere_datastore: /Lab/datastore/datastore1
-vsphere_vm_folder: /Lab/vm/TKG-Infra
-vsphere_network: /Lab/network/Lab-Infra
+vsphere_vm_folder: /Lab/vm/TKG-Workloads
+vsphere_network: /Lab/network/Lab-Workloads
 vsphere_password: REMOVED
 vsphere_resource_pool: "/Lab/host/esxi-main.pivotal-poc.solutions/Resources"
 vcenter_url: vcsa.pivotal-poc.solutions

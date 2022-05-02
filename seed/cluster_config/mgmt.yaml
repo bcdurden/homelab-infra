@@ -22,8 +22,13 @@ VSPHERE_WORKER_DISK_GIB: #@ data.values.control_plane_disk_gb
 VSPHERE_WORKER_MEM_MIB: #@ data.values.control_plane_memory_size_mb
 VSPHERE_WORKER_NUM_CPUS: #@ data.values.control_plane_cpu_count
 
+TKG_CUSTOM_IMAGE_REPOSITORY: "10.2.12.129:5000"
+TKG_CUSTOM_IMAGE_REPOSITORY_SKIP_TLS_VERIFY: true
+TKG_CUSTOM_IMAGE_REPOSITORY_CA_CERTIFICATE: ""
+
 CLUSTER_NAME: #@ data.values.cluster_name
 CLUSTER_PLAN:  #@ data.values.cluster_plan
+PROVIDER_TYPE: vsphere
 
 #! Defaults
 AVI_CA_DATA_B64: ""

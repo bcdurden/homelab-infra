@@ -5,6 +5,6 @@ nodes:
     image: kindest/node:v1.21.1
 containerdConfigPatches:
   - |-
-    [plugins."io.containerd.grpc.v1.cri".registry.configs."harbor.lab.pivotal-poc.solutions".tls]
+    [plugins."io.containerd.grpc.v1.cri".registry.configs."10.2.12.129:5000".tls]
       insecure_skip_verify = true
 
