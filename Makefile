@@ -40,6 +40,8 @@ harbor: metallb storage_class contour
 	tanzu package install harbor -p harbor.tanzu.vmware.com -v 2.2.3+vmware.1-tkg.2 -f ${SERVICES_DIR}/harbor/harbor-data-values.yaml
 	@printf "\n===>Placing Harbor CA Certificate at /tmp/harbor.ca.crt";
 	kubectl get secret harbor-ca-key-pair -n tanzu-system-registry -o yaml | yq e '.data."ca.crt"' - | base64 -d > /tmp/harbor.ca.crt
+	@printf "\n===>Injecting Harbor CA into kapp-controller as trusted";
+	kc get cm kapp-controller-config -n tkg-system -o yaml | ytt -f - -f overlays/kapp_config.yaml -v harbor_ca_cert="$(kubectl get secret harbor-ca-key-pair -n tanzu-system-registry -o yaml | yq e '.data."ca.crt"' -)" | kubectl replace -f -
 
 harbor_ca:
 	@printf "\n===>Placing Harbor CA Certificate at /tmp/harbor.ca.crt\n";\

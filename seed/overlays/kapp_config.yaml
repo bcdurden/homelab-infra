@@ -1,0 +1,8 @@
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:data", "data")
+
+#@overlay/match by=overlay.subset({"kind":"ConfigMap"})
+---
+data:
+  #@overlay/replace
+  caCerts: #@ data.values.harbor_ca_cert
