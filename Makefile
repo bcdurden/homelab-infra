@@ -19,6 +19,7 @@ kind: check-tools
 
 deploy:
 	@printf "\n===> Installing Infra Management-Cluster\n";\
+	cp ${BOOTSTRAP_DIR}/overlays/docker.yaml ~/.config/tanzu/tkg/providers/ytt/09_miscellaneous/
 	ytt -v vsphere_password=${PASSWORD} -f $(BOOTSTRAP_DIR)/cluster_config > /tmp/config.yaml && tanzu management-cluster create --file /tmp/config.yaml -v 6 --use-existing-bootstrap-cluster $(OPT_ARGS)
 
 storage_class: check-tools
