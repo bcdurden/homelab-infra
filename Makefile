@@ -45,7 +45,7 @@ harbor_ca:
 	@printf "\n===>Placing Harbor CA Certificate at /tmp/harbor.ca.crt\n";\
 	kubectl get secret harbor-ca-key-pair -n tanzu-system-registry -o yaml | yq e '.data."ca.crt"' - | base64 -d > /tmp/harbor.ca.crt
 
-install: kind deploy metallb harbor
+install: kind deploy metallb contour harbor storage_class
 	@printf "\n===> Installing Infra Management-Cluster\n";\
 
 delete-kind: check-tools
