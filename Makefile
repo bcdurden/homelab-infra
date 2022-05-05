@@ -1,3 +1,4 @@
+SHELL:=/bin/bash
 REQUIRED_BINARIES := tanzu ytt kubectl kind imgpkg kapp
 WORKING_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 ROOT_DIR := $(shell git rev-parse --show-toplevel)
@@ -8,6 +9,8 @@ PASSWORD="overrideme"
 HARBOR_VERSION="2.2.3+vmware.1-tkg.2"
 HARBOR_IMAGE_URL := $(shell kubectl -n tanzu-package-repo-global get packages harbor.tanzu.vmware.com.${HARBOR_VERSION} -o jsonpath='{.spec.template.spec.fetch[0].imgpkgBundle.image}')
 OPT_ARGS=""
+SOPS_KEY_NAME="gitops"
+GITOPS_KEY := "$(shell gpg --export-secret-keys -a gitops | base64 -w0)"
 
 check-tools: ## Check to make sure you have the right tools
 	$(foreach exec,$(REQUIRED_BINARIES),\
@@ -46,6 +49,10 @@ harbor: metallb storage_class contour
 harbor_ca:
 	@printf "\n===>Placing Harbor CA Certificate at /tmp/harbor.ca.crt\n";\
 	kubectl get secret harbor-ca-key-pair -n tanzu-system-registry -o yaml | yq e '.data."ca.crt"' - | base64 -d > /tmp/harbor.ca.crt
+
+sops:
+	@printf "\n===>Creating SOPS master secret\n";\
+	ytt -f seed/sops -v sops_key_base64=$(GITOPS_KEY) | kubectl apply -f -
 
 install: kind deploy metallb contour harbor storage_class
 	@printf "\n===> Installing Infra Management-Cluster\n";\
