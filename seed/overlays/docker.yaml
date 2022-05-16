@@ -1,0 +1,27 @@
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:data", "data")
+
+#@overlay/match by=overlay.subset({"kind":"KubeadmControlPlane"})
+---
+spec:
+  kubeadmConfigSpec:
+    #@overlay/match missing_ok=True
+    preKubeadmCommands:
+        - echo '[plugins."io.containerd.grpc.v1.cri".registry.mirrors."10.2.12.129:5000"]' >> /etc/containerd/config.toml
+        #@overlay/append
+        - echo '  endpoint = ["http://10.2.12.129:5000"]' >> /etc/containerd/config.toml
+        #@overlay/append
+        - systemctl restart containerd
+
+#@overlay/match by=overlay.subset({"kind":"KubeadmConfigTemplate"}),expects="1+"
+---
+spec:
+  template:
+    spec:
+      #@overlay/match missing_ok=True
+      preKubeadmCommands:
+        - echo '[plugins."io.containerd.grpc.v1.cri".registry.mirrors."10.2.12.129:5000"]' >> /etc/containerd/config.toml
+        #@overlay/append
+        - echo '  endpoint = ["http://10.2.12.129:5000"]' >> /etc/containerd/config.toml
+        #@overlay/append
+        - systemctl restart containerd

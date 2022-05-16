@@ -1,3 +1,4 @@
+SHELL:=/bin/bash
 REQUIRED_BINARIES := tanzu ytt kubectl kind imgpkg kapp
 WORKING_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 ROOT_DIR := $(shell git rev-parse --show-toplevel)
@@ -8,6 +9,8 @@ PASSWORD="overrideme"
 HARBOR_VERSION="2.2.3+vmware.1-tkg.2"
 HARBOR_IMAGE_URL := $(shell kubectl -n tanzu-package-repo-global get packages harbor.tanzu.vmware.com.${HARBOR_VERSION} -o jsonpath='{.spec.template.spec.fetch[0].imgpkgBundle.image}')
 OPT_ARGS=""
+SOPS_KEY_NAME="gitops"
+GITOPS_KEY := "$(shell gpg --export-secret-keys -a gitops | base64 -w0)"
 
 check-tools: ## Check to make sure you have the right tools
 	$(foreach exec,$(REQUIRED_BINARIES),\
@@ -19,6 +22,7 @@ kind: check-tools
 
 deploy:
 	@printf "\n===> Installing Infra Management-Cluster\n";\
+	cp ${BOOTSTRAP_DIR}/overlays/docker.yaml ~/.config/tanzu/tkg/providers/ytt/09_miscellaneous/
 	ytt -v vsphere_password=${PASSWORD} -f $(BOOTSTRAP_DIR)/cluster_config > /tmp/config.yaml && tanzu management-cluster create --file /tmp/config.yaml -v 6 --use-existing-bootstrap-cluster $(OPT_ARGS)
 
 storage_class: check-tools
@@ -39,12 +43,18 @@ harbor: metallb storage_class contour
 	tanzu package install harbor -p harbor.tanzu.vmware.com -v 2.2.3+vmware.1-tkg.2 -f ${SERVICES_DIR}/harbor/harbor-data-values.yaml
 	@printf "\n===>Placing Harbor CA Certificate at /tmp/harbor.ca.crt";
 	kubectl get secret harbor-ca-key-pair -n tanzu-system-registry -o yaml | yq e '.data."ca.crt"' - | base64 -d > /tmp/harbor.ca.crt
+	@printf "\n===>Injecting Harbor CA into kapp-controller as trusted";
+	kc get cm kapp-controller-config -n tkg-system -o yaml | ytt -f - -f overlays/kapp_config.yaml -v harbor_ca_cert="$(kubectl get secret harbor-ca-key-pair -n tanzu-system-registry -o yaml | yq e '.data."ca.crt"' - | base64 -d)" | kubectl replace -f -
 
 harbor_ca:
 	@printf "\n===>Placing Harbor CA Certificate at /tmp/harbor.ca.crt\n";\
 	kubectl get secret harbor-ca-key-pair -n tanzu-system-registry -o yaml | yq e '.data."ca.crt"' - | base64 -d > /tmp/harbor.ca.crt
 
-install: kind deploy metallb harbor
+sops:
+	@printf "\n===>Creating SOPS master secret\n";\
+	ytt -f seed/sops -v sops_key_base64=$(GITOPS_KEY) | kubectl apply -f -
+
+install: kind deploy metallb contour harbor storage_class
 	@printf "\n===> Installing Infra Management-Cluster\n";\
 
 delete-kind: check-tools

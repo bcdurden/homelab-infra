@@ -77,7 +77,7 @@ persistence:
       storageClass: ""
       subPath: ""
       accessMode: ReadWriteOnce
-      size: 100Gi
+      size: 20Gi
     jobservice:
       existingClaim: ""
       storageClass: ""
