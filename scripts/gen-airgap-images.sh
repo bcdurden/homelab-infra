@@ -15,10 +15,10 @@ echodual() {
   echo "#" "$@"
 }
 
-if [ -z "$TKG_CUSTOM_IMAGE_REPOSITORY" ]; then
-  echo "TKG_CUSTOM_IMAGE_REPOSITORY variable is required but is not defined" >&2
-  exit 1
-fi
+# if [ -z "$TKG_CUSTOM_IMAGE_REPOSITORY" ]; then
+#   echo "TKG_CUSTOM_IMAGE_REPOSITORY variable is required but is not defined" >&2
+#   exit 1
+# fi
 
 if [ -z "$TKG_IMAGE_REPO" ]; then
   echo "TKG_IMAGE_REPO variable is required but is not defined" >&2
@@ -40,21 +40,22 @@ function imgpkg_copy() {
     flags=$1
     src=$2
     dst=$3
+    filename=$(echo $dst | tr / %)
     echo ""
-    echo "imgpkg copy $flags $src --to-tar ${dst}.tar"
+    echo "imgpkg copy $flags $src --to-tar ${filename}.tar"
 }
 
-if [ -n "$TKG_CUSTOM_IMAGE_REPOSITORY_CA_CERTIFICATE" ]; then
-  echo $TKG_CUSTOM_IMAGE_REPOSITORY_CA_CERTIFICATE > /tmp/cacrtbase64
-  base64 -d /tmp/cacrtbase64 > /tmp/cacrtbase64d.crt
-  function imgpkg_copy() {
-      flags=$1
-      src=$2
-      dst=$3
-      echo ""
-      echo "imgpkg copy $flags $src --to-tar ${dst}.tar"
-  }
-fi
+# if [ -n "$TKG_CUSTOM_IMAGE_REPOSITORY_CA_CERTIFICATE" ]; then
+#   echo $TKG_CUSTOM_IMAGE_REPOSITORY_CA_CERTIFICATE > /tmp/cacrtbase64
+#   base64 -d /tmp/cacrtbase64 > /tmp/cacrtbase64d.crt
+#   function imgpkg_copy() {
+#       flags=$1
+#       src=$2
+#       dst=$3
+#       echo ""
+#       echo "imgpkg copy $flags $src --to-tar ${dst}.tar"
+#   }
+# fi
 
 echo "set -euo pipefail"
 echodual "Note that yq must be version above or equal to version 4.9.2 and below version 5."
@@ -73,7 +74,7 @@ for imageTag in ${list}; do
 
     actualTKGImage=${actualImageRepository}/tkg-bom:${imageTag}
     customTKGImage=${TKG_CUSTOM_IMAGE_REPOSITORY}/tkg-bom
-    imgpkg_copy "-i" $actualTKGImage tkg-bom
+    imgpkg_copy "-i" $actualTKGImage tkg-bom:${imageTag}
 
     # Get components in the tkg-bom.
     # Remove the leading '[' and trailing ']' in the output of yq.
@@ -92,7 +93,7 @@ for imageTag in ${list}; do
         actualImage=${actualImageRepository}/${image}
         image2=$(echo "$image" | cut -f1 -d":")
         customImage=$TKG_CUSTOM_IMAGE_REPOSITORY/${image2}
-        imgpkg_copy $flags $actualImage ${image2}
+        imgpkg_copy $flags $actualImage ${image}
       done
     done
 
@@ -117,7 +118,7 @@ for imageTag in ${list}; do
 
     actualTKRImage=${actualImageRepository}/tkr-bom:${imageTag}
     customTKRImage=${TKG_CUSTOM_IMAGE_REPOSITORY}/tkr-bom
-    imgpkg_copy "-i" $actualTKRImage tkr-bom
+    imgpkg_copy "-i" $actualTKRImage tkr-bom:${imageTag}
     imgpkg pull --image ${actualImageRepository}/tkr-bom:${imageTag} --output "tmp" > /dev/null 2>&1
 
     # Get components in the tkr-bom.
@@ -137,7 +138,7 @@ for imageTag in ${list}; do
         actualImage=${actualImageRepository}/${image}
         image2=$(echo "$image" | cut -f1 -d":")
         customImage=$TKG_CUSTOM_IMAGE_REPOSITORY/${image2}
-        imgpkg_copy $flags $actualImage ${image2}
+        imgpkg_copy $flags $actualImage ${image}
       done
     done
 
@@ -153,7 +154,7 @@ for imageTag in ${list}; do
     echodual "Processing TKR compatibility image"
     actualImage=${actualImageRepository}/tkr-compatibility:${imageTag}
     customImage=$TKG_CUSTOM_IMAGE_REPOSITORY/tkr-compatibility
-    imgpkg_copy "-i" $actualImage tkr-compatibility
+    imgpkg_copy "-i" $actualImage tkr-compatibility:${imageTag}
     echo ""
     echodual "Finished processing TKR compatibility image"
   fi
@@ -172,7 +173,7 @@ for imageTag in ${list}; do
     echodual "Processing TKG compatibility image"
     actualImage=${tkg_compatibility_endpoint}:${imageTag}
     customImage=$TKG_CUSTOM_IMAGE_REPOSITORY/tkg-compatibility
-    imgpkg_copy "-i" $actualImage tkg-compatibility
+    imgpkg_copy "-i" $actualImage tkg-compatibility:${imageTag}
     echo ""
     echodual "Finished processing TKG compatibility image"
   fi

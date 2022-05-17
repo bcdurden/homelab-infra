@@ -12,6 +12,16 @@ OPT_ARGS=""
 SOPS_KEY_NAME="gitops"
 GITOPS_KEY := "$(shell gpg --export-secret-keys -a gitops | base64 -w0)"
 
+
+# TKG export vars
+TKG_IMAGE_REPO="projects.registry.vmware.com/tkg"
+TKR_VERSION="v1.21.8_vmware.1-tkg.2"
+TKG_REMOTE_REPO="harbor.lab.pivotal-poc.solutions/tkg"
+TKG_REMOTE_CA_FILE="/tmp/harbor.ca.crt"
+TKG_TAR_FILENAME="${PWD}/airgap_images.tar"
+
+TKG_REMOTE_CA_CERT_B64 := "$(shell cat ${TKG_REMOTE_CA_FILE} | base64 -w0)"
+
 check-tools: ## Check to make sure you have the right tools
 	$(foreach exec,$(REQUIRED_BINARIES),\
 		$(if $(shell which $(exec)),,$(error "'$(exec)' not found. Tanzu CLI is required. See instructions at https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/1.5/vmware-tanzu-kubernetes-grid-15/GUID-install-cli.html")))
@@ -60,3 +70,13 @@ install: kind deploy metallb contour harbor storage_class
 delete-kind: check-tools
 	@printf "\n===> Removing KinD cluster\n";\
 	kind delete cluster
+
+tkg-export: check-tools
+	@printf "\n===> Exporting TKG images\n";\
+	pushd scripts && TKG_IMAGE_REPO=${TKG_IMAGE_REPO} TKR_VERSION=${TKR_VERSION} ./gen-airgap-images.sh > image-copy-list
+	pushd scripts && ./download-images.sh image-copy-list
+	pushd scripts && tar cvf airgap_images.tar *.tar && cp airgap_images.tar ../ && rm -rf *.tar
+
+tkg-push: check-tools 
+	@printf "\n===> Pushing TKG image archive\n";\
+	pushd scripts && TKG_CUSTOM_IMAGE_REPOSITORY=${TKG_REMOTE_REPO} TKG_CUSTOM_IMAGE_REPOSITORY_CA_CERTIFICATE=${TKG_REMOTE_CA_CERT_B64} ./push-tar.sh ${TKG_TAR_FILENAME}
