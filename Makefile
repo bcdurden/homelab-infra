@@ -75,7 +75,7 @@ tkg-export: check-tools
 	@printf "\n===> Exporting TKG images\n";\
 	pushd scripts && TKG_IMAGE_REPO=${TKG_IMAGE_REPO} TKR_VERSION=${TKR_VERSION} ./gen-airgap-images.sh > image-copy-list
 	pushd scripts && ./download-images.sh image-copy-list
-	pushd scripts && tar cvf airgap_images.tar *.tar && cp airgap_images.tar ../ && rm -rf *.tar
+	pushd scripts && tar cvf airgap_images.tar *.tar && cp airgap_images.tar ../ && rm -rf *.tar && rm image-copy-list
 
 tkg-push: check-tools 
 	@printf "\n===> Pushing TKG image archive\n";\
